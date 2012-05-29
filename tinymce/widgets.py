@@ -55,9 +55,7 @@ class TinyMCE(forms.Textarea):
         self.content_language = content_language
 
     def _script_block(self):
-        if hasattr(self, 'scripts'):
-            return mark_safe(''.join(self.scripts))
-        return mark_safe('')
+        return mark_safe(''.join(self.scripts))
     script_block = property(_script_block)
 
     def render(self, name, value, attrs=None):
@@ -90,7 +88,6 @@ class TinyMCE(forms.Textarea):
             mce_json = mce_json[:index]+', '+k+':'+js_functions[k].strip()+mce_json[index:]
             
         html = [u'<textarea%s>%s</textarea>' % (flatatt(final_attrs), escape(value))]
-        scripts = list()
         if tinymce.settings.USE_COMPRESSOR:
             compressor_config = {
                 'plugins': mce_config.get('plugins', ''),
