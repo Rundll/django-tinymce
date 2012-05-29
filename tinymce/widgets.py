@@ -43,12 +43,22 @@ class TinyMCE(forms.Textarea):
 
     def __init__(self, content_language=None, attrs=None, mce_attrs=None):
         super(TinyMCE, self).__init__(attrs)
+        
+        # holds js
+        self.scripts = list()
+        
         if mce_attrs is None:
             mce_attrs = {}
         self.mce_attrs = mce_attrs
         if content_language is None:
             content_language = mce_attrs.get('language', None)
         self.content_language = content_language
+
+    def _script_block(self):
+        if hasattr(self, 'scripts'):
+            return mark_safe(''.join(self.scripts))
+        return mark_safe('')
+    script_block = property(_script_block)
 
     def render(self, name, value, attrs=None):
         if value is None: value = ''
@@ -80,6 +90,7 @@ class TinyMCE(forms.Textarea):
             mce_json = mce_json[:index]+', '+k+':'+js_functions[k].strip()+mce_json[index:]
             
         html = [u'<textarea%s>%s</textarea>' % (flatatt(final_attrs), escape(value))]
+        scripts = list()
         if tinymce.settings.USE_COMPRESSOR:
             compressor_config = {
                 'plugins': mce_config.get('plugins', ''),
@@ -89,10 +100,13 @@ class TinyMCE(forms.Textarea):
                 'debug': False,
             }
             compressor_json = simplejson.dumps(compressor_config)
-            html.append(u'<script type="text/javascript">tinyMCE_GZ.init(%s)</script>' % compressor_json)
-        html.append(u'<script type="text/javascript">tinyMCE.init(%s)</script>' % mce_json)
+            self.scripts.append(u'<script type="text/javascript">tinyMCE_GZ.init(%s)</script>' % compressor_json)
+        self.scripts.append(u'<script type="text/javascript">tinyMCE.init(%s)</script>' % mce_json)
 
-        return mark_safe(u'\n'.join(html))
+        if not tinymce.settings.USE_SCRIPT_BLOCK:
+            return mark_safe(u'\n'.join(html+self.scripts))
+        else:
+            return mark_safe(u'\n'.join(html))
 
     def _media(self):
         if tinymce.settings.USE_COMPRESSOR:

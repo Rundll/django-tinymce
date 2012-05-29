@@ -19,3 +19,6 @@ else:
     JS_ROOT = getattr(settings, 'TINYMCE_JS_ROOT', os.path.join(settings.MEDIA_ROOT, 'js/tiny_mce'))
 
 JS_BASE_URL = JS_URL[:JS_URL.rfind('/')]
+
+# Instead of inserting code in page, attach script to the field for use at end of file 
+USE_SCRIPT_BLOCK = getattr(settings, 'TINYMCE_USE_SCRIPT_BLOCK', False)

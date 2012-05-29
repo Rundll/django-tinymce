@@ -138,6 +138,11 @@ file.
   Whether to use the django-filebrowser_ as a custom filebrowser for media inclusion.
   See the `official TinyMCE documentation on custom filebrowsers`_.
 
+``TINYMCE_USE_SCRIPT_BLOCK`` (default: ``False``)
+  This stops the TinyMCE init calls for a text field for being inserted directly after the input, instead it is
+  up to the developer to call {{form.your_tinymce_field.field.widget.script_block}} at the end of the html page.
+  This is useful when javascript is include at the end of the HTML output and is best practice for fast page load times.
+
 Example::
 
   TINYMCE_JS_URL = 'http://debug.example.org/tiny_mce/tiny_mce_src.js'
